@@ -45,7 +45,10 @@ Engine features a built-in Privacy Wall:
 Every transformation step is guarded by tests. Custom tests such as ```assert_positive_inventory``` act as business circuit breakers, identifying projected stockouts before data is committed to the Gold Layer.
 
 ---
+### PowerBI Dashboard
+<img width="895" height="494" alt="Image" src="https://github.com/user-attachments/assets/7d7fc53b-6674-41e6-afe1-86944e70338b" />
 
+---
 ## Future Roadmap & Enterprise Scaling
 ### 1. Advanced Analytics
 Integrate forecasting model to move from descriptive to predictive demand planning
