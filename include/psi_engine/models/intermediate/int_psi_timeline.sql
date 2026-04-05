@@ -1,0 +1,140 @@
+with date_spine as (
+    select 
+        cast(current_date - (n || 'days')::interval as date) as date
+    from (
+        select range as n from range(60)
+    ) as t
+),
+
+all_products as (
+    select distinct product_id, store_id from {{ ref('stg_inventory') }}
+),
+
+grid as (
+    select
+        p.product_id,
+        p.store_id,
+        d.date
+    from all_products p
+    cross join date_spine d
+),
+
+daily_demand as(
+    select
+        product_id,
+        store_id,
+        sale_date,
+        sum(qty_sold) as forecasted_demand
+    from {{ ref('stg_sales') }}
+    group by product_id, store_id, sale_date
+),
+
+daily_supply as (
+    select
+        product_id,
+        store_id,
+        expected_arrival_date as supply_date,
+        sum(qty_ordered) as incoming_supply
+    from {{ ref('stg_supply_orders') }}
+    group by product_id, store_id, supply_date
+),
+
+current_inv as (
+    select 
+        product_id,
+        store_id, 
+        qty_on_hand as initial_stock
+    from {{ ref('stg_inventory') }}
+),
+
+-- Old Version
+-- joined as (
+--     select
+--         d.sale_date,
+--         d.product_id,
+--         coalesce(c.initial_stock, 0) as starting_inventory,
+--         coalesce(d.forecasted_demand, 0) as demand,
+--         coalesce(s.incoming_supply, 0) as supply
+--     from daily_demand d
+--     left join daily_supply s
+--         on d.product_id = s.product_id and d.sale_date = s.supply_date
+--     left join current_inv c
+--         on d.product_id = c.product_id
+-- )
+
+-- all_keys as (
+--     select product_id, store_id, sale_date as date from daily_demand
+--     union distinct
+--     select product_id, store_id, supply_date as date from daily_supply
+--     union distinct
+--     select product_id, store_id, cast(current_date as date) as date from current_inv
+-- ),
+
+
+
+
+
+-- joined as (
+--     select
+--         k.date as sale_date,
+--         k.product_id,
+--         k.store_id,
+--         coalesce(c.initial_stock, 0) as starting_inventory,
+--         coalesce(d.forecasted_demand, 0) as demand,
+--         coalesce(s.incoming_supply, 0) as supply
+--     from all_keys k
+
+--     left join daily_demand d
+--         on k.product_id = d.product_id
+--         and k.store_id = d.store_id
+--         and k.date = d.sale_date
+--     left join daily_supply s
+--         on k.product_id = s.product_id
+--         and k.store_id = s.store_id
+--         and k.date = s.supply_date
+--     left join current_inv c
+--         on k.product_id = c.product_id
+--         and k.store_id = c.store_id
+-- )
+
+joined as (
+    select
+        g.date,
+        g.product_id,
+        g.store_id,
+        case
+            when g.date = (select min(date) from date_spine) then coalesce(c.initial_stock, 0)
+            else 0
+        end as starting_inventory,
+        coalesce(d.forecasted_demand, 0) as demand,
+        coalesce(s.incoming_supply, 0) as supply
+    from grid g
+    left join daily_demand d 
+        on g.product_id = d.product_id 
+        and g.store_id = d.store_id 
+        and g.date = d.sale_date
+    left join daily_supply s 
+        on g.product_id = s.product_id 
+        and g.store_id = s.store_id 
+        and g.date = s.supply_date
+    left join current_inv c 
+        on g.product_id = c.product_id
+        and g.store_id = c.store_id
+)
+
+select
+    -- *,
+    product_id,
+    store_id,
+    date,
+    demand,
+    supply,
+    -- starting_inventory
+    -- + sum(supply) over (partition by product_id order by date rows between unbounded preceding and current row)
+    -- - sum(demand) over (partition by product_id order by date rows between unbounded preceding and current row)
+    sum(starting_inventory + supply - demand) over (
+        partition by product_id, store_id
+        order by date
+        rows between unbounded preceding and current row
+    ) as projected_inventory_on_hand
+from joined

@@ -1,0 +1,33 @@
+version: 2
+
+sources:
+  - name: raw_supply_chain
+    schema: main_raw
+    description: "Inbound supply chain raw data layer"
+    tables:
+      - name: train
+        description: "Historical sales demand (Kaggle data)"
+        # DAMA Timeliness: Quality check for data latency
+        freshness:
+          warn_after: {count: 24, period: hour}
+        columns:
+          - name: date
+            data_tests:  # Using modern dbt 1.7+ syntax
+              - not_null
+          - name: sales
+              - not_null
+
+      - name: mock_inventory_snapshot
+        description: "Current on-hand inventory"
+        columns:
+          - name: item_id
+            data_tests:
+              - not_null
+
+      - name: mock_supply_orders
+        description: "Open and closed POs"        
+        columns:
+          - name: po_id
+            data_tests:
+              - unique
+              - not_null

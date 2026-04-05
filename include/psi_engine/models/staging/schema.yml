@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: stg_sales
+    description: "Cleaned sales data with renamed columns and type casting"
+    columns:
+      - name: sales_id
+        data_tests:
+          - unique
+          - not_null
