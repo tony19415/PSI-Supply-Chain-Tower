@@ -6,13 +6,20 @@ models:
     config:
       meta:
         source_system: "Kaggle_External"
-        data_steward: "Data Engineer"
+        owner: "Data Engineer"
         confidentiality: "Internal"
     columns:
       - name: sales_id
+        description: "Unique transaction ID."
         data_tests:
           - unique
           - not_null
+      - name: sale_date
+        description: "Timestamp of the customer purchase."
+      - name: store_id
+        description: "Originating store for the sale."
+      - name: product_id
+        description: "SKU purchased."
       - name: qty_sold
         description: "Volume of unites moved in a single transaction."
   
@@ -21,6 +28,7 @@ models:
     config:
       meta:
         source_system: "Inventory_API"
+        owner: "Data Engineer"
         data_steward: "Logistics Department"
     columns:
       - name: product_id
@@ -28,15 +36,39 @@ models:
           - not_null
       - name: qty_on_hand
         description: "The physical units available in the warehouse at the time of snapshot"
+      - name: inventory_id
+        description: "Surrogate key for the inventory record."
+      - name: inventory_date
+        description: "Date the snapshot was taken."
+      - name: store_id
+        description: "ID of the warehouse or store."
+      - name: product_id
+        description: "ID of the product being tracked."
+      - name: warehouse_location
+        description: "Physical bin or aisle within the facility."
 
   - name: stg_supply_orders
     description: "Inbound supply logistics data. Tracks expected arrivalbs of new stock."
     config:
       meta:
         source_system: "ERP_Logistics"
-        data_steward: "Procurement_Team"
+        owner: "Procurement_Team"
     columns:
       - name: qty_ordered
         description: "The volume of units expected in an incoming shipment."
       - name: expected_arrival_date
         description: "The date the supply is anticipated to hit the warehouse shelves."
+      - name: po_id
+        description: "Purchase Order identifier."
+      - name: product_id
+        description: "Product being ordered."
+      - name: store_id
+        description: "Destination store for the supply."
+      - name: order_date
+        description: "Date the PO was issued."
+      - name: actual_arrival_date
+        description: "Date the stock physically arrived (if received)."
+      - name: status
+        description: "Current state: Shipped, Pending, or Received."
+      - name: supplier_id
+        description: "Primary key for the vendor."

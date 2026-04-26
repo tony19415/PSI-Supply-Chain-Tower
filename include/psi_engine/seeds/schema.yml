@@ -1,0 +1,23 @@
+version: 2
+
+seeds:
+  - name: dim_store_regions
+    description: "Raw mapping file for store leadership."
+    columns:
+      - name: store_id
+        description: "Identifier for the physical retail unit."
+      - name: region
+        description: "Sales territory."
+      - name: manager_name
+        description: "Raw PII (Plaintext Manager Name)."
+
+  - name: mock_inventory_snapshot
+    description: "Mocked API response for current stock levels."
+    columns:
+      - name: snapshot_date
+        description: "Datetime of the API extraction."
+      - name: qty_on_hand
+        description: "Live count of available units."
+
+  - name: mock_supply_orders
+    description: "Simulated ERP data for inbound logistics."

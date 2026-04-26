@@ -9,23 +9,70 @@ models:
         criticality: "High"
         pii_status: "Anonymized"
     columns:
+      - name: sale_date
+        description: "The business date for the transaction records."
+      - name: store_id
+        description: "Primary key for the retail location."
+      - name: region
+        description: "Geographic territory (North, South, East, West)."
+      - name: manager_key
+        description: "Technical hash used for joining; protects PII."
+      - name: manager_masked
+        description: "Anonymized manager identifier for public reporting (GDPR Compliance)."
+      - name: qty_sold
+        description: "Total units sold on this specific date."
+      - name: qty_ordered
+        description: "Total units expected from incoming supply orders."
       - name: product_id
         description: "Product ID"
         data_tests:
           - not_null
           - relationships:
-              to: ref('dim_product')
-              field: product_id
+              arguments:
+                to: ref('dim_product')
+                field: product_id
               
       - name: inventory_health_status
         description: "Critical health of stock based on DOS Buffer"
         meta:
+          owner: "Supply Analyst"
           business_term: "SKU Vitality"
         data_tests:
           - accepted_values:
-              values: ['Healthy', 'Risk', 'Stockout']
+              arguments:
+                values: ['Healthy', 'Risk', 'Stockout']
               # If a new status like 'Unknown' appears, this test fails.
       - name: projected_inventory_on_hand
         description: "Forecasted inventory level at the end of the business day."
       - name: dw_inserted_at
         description: "Operational Metadata: Timestamp of when this record was processed by PSI Engine."
+  
+  - name: dim_store_regions_hashed
+    description: "Dimension table mapping stores to regions with hashed PII for security."
+    meta:
+      owner: "Data Engineer"
+    columns:
+      - name: store_id
+        description: "Unique identifier for the store."
+      - name: region
+        description: "Regional classification."
+      - name: real_manager_name
+        description: "Internal-only plain text name (Filtered in Gold layer)."
+      - name: manager_key
+        description: "SHA256 hash of the manager name."
+      - name: manager_masked
+        description: "The 'A***' style masking used for visual consistency."
+
+  - name: dim_product
+    description: "Master list of products and their supply chain attributes."
+    meta:
+      owner: "Analytics Engineer"
+    columns:
+      - name: product_id
+        description: "Primary key for the product."
+      - name: product_name
+        description: "Marketing name of the SKU."
+      - name: abc_class
+        description: "Inventory importance classification (A=High Value, C=Low Value)."
+      - name: lead_time_days
+        description: "Average days required to receive stock from the supplier."

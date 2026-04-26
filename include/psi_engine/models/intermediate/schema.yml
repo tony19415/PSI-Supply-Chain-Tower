@@ -12,16 +12,22 @@ models:
         dama_domain: "Inventory Lifecycle"
     columns:
       - name: date
+        data_type: DATE
         description: "The reference date from the 60-day spine."
       - name: product_id
+        data_type: INTEGER
         description: "Unique SKU identifier."
       - name: store_id
+        data_type: INTEGER
         description: "Unique Location identifier."
       - name: demand
+        data_type: INTEGER
         description: "Aggregated forecasted demand (qty_sold) for this day."
       - name: supply
+        data_type: INTEGER
         description: "Aggregated incoming supply (qty_ordered) for this day."
       - name: projected_inventory_on_hand
+        data_type: INTEGER
         description: "The cumulative running balance of stock."
         meta:
           calculation_rule: >
