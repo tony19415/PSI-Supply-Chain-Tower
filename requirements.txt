@@ -1,3 +1,4 @@
-pandas
-dbt-duckdb
-duckdb
+# Requirements for PSI Engine
+pandas>=2.0.0
+dbt-duckdb~=1.8.0
+duckdb>=1.0.0
