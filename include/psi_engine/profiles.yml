@@ -5,7 +5,8 @@ psi_engine:
     dev:
       type: duckdb
       # This creates the database file inside your project folder
-      path: /opt/airflow/include/psi_engine/psi_supply_chain.duckdb
+      # path: /opt/airflow/include/psi_engine/psi_supply_chain.duckdb
+      path: psi_supply_chain.duckdb
       # Optional settings for performance
       extensions:
         - parquet
