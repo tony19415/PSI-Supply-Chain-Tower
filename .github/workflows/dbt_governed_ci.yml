@@ -59,3 +59,10 @@ jobs:
         with:
           name: psi-engine-metadata-catalog
           path: include/psi_engine/target/
+
+      - name: 8. Deploy to GitHub Packages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./include/psi_engine/target
