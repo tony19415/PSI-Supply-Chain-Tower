@@ -1,0 +1,11 @@
+
+    
+    
+    truncate table "psi_supply_chain"."main_raw"."dim_store_regions";
+    -- dbt seed --
+    
+          COPY "psi_supply_chain"."main_raw"."dim_store_regions" FROM '/home/runner/work/PSI-Supply-Chain-Tower/PSI-Supply-Chain-Tower/include/psi_engine/seeds/dim_store_regions.csv' (FORMAT CSV, HEADER TRUE, DELIMITER ',')
+        
+
+;
+  

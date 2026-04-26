@@ -1,0 +1,11 @@
+
+    
+    
+    truncate table "psi_supply_chain"."main_raw"."mock_inventory_snapshot";
+    -- dbt seed --
+    
+          COPY "psi_supply_chain"."main_raw"."mock_inventory_snapshot" FROM '/home/runner/work/PSI-Supply-Chain-Tower/PSI-Supply-Chain-Tower/include/psi_engine/seeds/mock_inventory_snapshot.csv' (FORMAT CSV, HEADER TRUE, DELIMITER ',')
+        
+
+;
+  

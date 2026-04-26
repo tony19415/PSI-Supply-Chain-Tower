@@ -1,0 +1,25 @@
+
+  
+    
+    
+
+    create  table
+      "psi_supply_chain"."main"."dim_store_regions_hashed__dbt_tmp"
+  
+    as (
+      with source as (
+    select * from "psi_supply_chain"."main_raw"."dim_store_regions"
+)
+
+select
+    store_id,
+    region,
+
+    manager_name as real_manager_name,
+    md5(manager_name) as manager_key,
+    concat(substr(manager_name, 1, 1), '***') as manager_masked
+
+from source
+    );
+  
+  
