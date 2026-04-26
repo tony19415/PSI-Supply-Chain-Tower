@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: int_psi_timeline
+    description: >
+      The 'Spine' of the PSI Engine. Uses a 60-day date spine and a cross-join 
+      to ensure a continuous time-series for every SKU/Store combination.
+    config:
+      meta:
+        transformation_type: "Cumulative Balance"
+        update_frequency: "Daily"
+        dama_domain: "Inventory Lifecycle"
+    columns:
+      - name: date
+        description: "The reference date from the 60-day spine."
+      - name: product_id
+        description: "Unique SKU identifier."
+      - name: store_id
+        description: "Unique Location identifier."
+      - name: demand
+        description: "Aggregated forecasted demand (qty_sold) for this day."
+      - name: supply
+        description: "Aggregated incoming supply (qty_ordered) for this day."
+      - name: projected_inventory_on_hand
+        description: "The cumulative running balance of stock."
+        meta:
+          calculation_rule: >
+            Running Sum: starting_inventory + supply - demand 
+            partitioned by product and store, ordered by date.
+          business_logic: "Kimball-style inventory snapshots."

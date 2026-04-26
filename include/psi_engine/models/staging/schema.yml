@@ -3,8 +3,40 @@ version: 2
 models:
   - name: stg_sales
     description: "Cleaned sales data with renamed columns and type casting"
+    config:
+      meta:
+        source_system: "Kaggle_External"
+        data_steward: "Data Engineer"
+        confidentiality: "Internal"
     columns:
       - name: sales_id
         data_tests:
           - unique
           - not_null
+      - name: qty_sold
+        description: "Volume of unites moved in a single transaction."
+  
+  - name: stg_inventory
+    description: "Cleaned snapshot of current inventory levels from Mock API."
+    config:
+      meta:
+        source_system: "Inventory_API"
+        data_steward: "Logistics Department"
+    columns:
+      - name: product_id
+        data_tests:
+          - not_null
+      - name: qty_on_hand
+        description: "The physical units available in the warehouse at the time of snapshot"
+
+  - name: stg_supply_orders
+    description: "Inbound supply logistics data. Tracks expected arrivalbs of new stock."
+    config:
+      meta:
+        source_system: "ERP_Logistics"
+        data_steward: "Procurement_Team"
+    columns:
+      - name: qty_ordered
+        description: "The volume of units expected in an incoming shipment."
+      - name: expected_arrival_date
+        description: "The date the supply is anticipated to hit the warehouse shelves."
