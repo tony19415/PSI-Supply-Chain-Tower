@@ -12,8 +12,9 @@ jobs:
     
     # We define environment variables for DuckDB to live in the container
     env:
-      DBT_PROFILES_DIR: ./include/psi_engine
-      DBT_STATE: ./include/psi_engine/logs/state
+      DBT_PROFILES_DIR: ${{ github.workspace }}/include/psi_engine
+      DBT_STATE: ${{ github.workspace }}/include/psi_engine/logs/state
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: 1. Checkout Repository
