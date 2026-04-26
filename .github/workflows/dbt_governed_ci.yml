@@ -35,7 +35,12 @@ jobs:
         run: |
           cd include/psi_engine
           dbt debug
-
+    
+      - name: 4.5 Install dbt Packages
+        run: |
+          cd include/psi_engine
+          dbt deps
+    
       - name: "5. Slim CI: Build & Test (State-Aware)"
         # This only runs models you modified, saving time and compute
         run: |
